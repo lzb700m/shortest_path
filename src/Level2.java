@@ -1,11 +1,13 @@
+import graph.Edge;
 import graph.Graph;
 import graph.Vertex;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
 import java.util.Scanner;
 
-public class Level1 {
+public class Level2 {
 	public static void main(String[] args) throws FileNotFoundException {
 		// read in a directed graph
 		Scanner in;
@@ -20,30 +22,25 @@ public class Level1 {
 
 		Vertex source = ShortestPath.findSource(input);
 		//
-		boolean zeroCycleSensitive = false;
-		String algoType = "";
+		boolean zeroCycleSensitive = true;
 		boolean hasNegCycle = false;
 
 		int graphType = ShortestPath.sp_categorizer(input, zeroCycleSensitive);
 
 		switch (graphType) {
 		case DEF.UNIFORM_WEIGHT:
-			algoType = "BFS";
 			ShortestPath.sp_bfs(input, source);
 			break;
 
 		case DEF.DAG:
-			algoType = "DAG";
 			ShortestPath.sp_dag(input, source, zeroCycleSensitive);
 			break;
 
 		case DEF.NON_NEG_WEIGHT:
-			algoType = "Dij";
 			ShortestPath.sp_dijkstra(input, source, zeroCycleSensitive);
 			break;
 
 		case DEF.OTHER:
-			algoType = "B-F";
 			hasNegCycle = !ShortestPath
 					.sp_bf(input, source, zeroCycleSensitive);
 			break;
@@ -53,21 +50,24 @@ public class Level1 {
 		}
 
 		if (hasNegCycle) {
-			System.out.println(DEF.ERROR_LEVEL1);
+			System.out.println(DEF.ERROR_LEVEL2);
+			List<Edge> nonPosCycle = ShortestPath.findNonPosCycle(input);
+			for (Edge e : nonPosCycle) {
+				System.out.println(e);
+			}
 		} else {
-			printOutput(input, source, algoType);
+			Graph d = ShortestPath.countSPPath(input);
+			printOutput(d);
 		}
 	}
 
-	private static void printOutput(Graph g, Vertex source, String algoType) {
-		long spSum = 0;
+	private static void printOutput(Graph g) {
+		int pathCountSum = 0;
 
 		for (Vertex v : g) {
-			if (v.distance != Integer.MAX_VALUE) {
-				spSum += v.distance;
-			}
+			pathCountSum += v.spCount;
 		}
-		System.out.println(algoType + " " + spSum);
+		System.out.println(pathCountSum);
 
 		if (g.numNodes <= DEF.SIZE_CUT_OFF) {
 			StringBuilder line = new StringBuilder();
@@ -81,11 +81,7 @@ public class Level1 {
 					line.append("INF");
 				}
 				line.append(" ");
-				if (v.parent != null) {
-					line.append(v.parent);
-				} else {
-					line.append("-");
-				}
+				line.append(v.spCount);
 				System.out.println(line.toString());
 			}
 		}

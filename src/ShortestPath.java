@@ -2,13 +2,28 @@ import graph.Edge;
 import graph.Graph;
 import graph.Vertex;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 
 import pq.IndexedHeap;
 
 public class ShortestPath {
+
+	public static int sp_categorizer(Graph g, boolean zeroCycleSensitive) {
+		if (hasUniformEdgeWeight(g)) {
+			return DEF.UNIFORM_WEIGHT;
+		} else if (!hasCycle(g)) {
+			return DEF.DAG;
+		} else if (!hasNegEdgeWeight(g, zeroCycleSensitive)) {
+			return DEF.NON_NEG_WEIGHT;
+		} else {
+			return DEF.OTHER;
+		}
+	}
+
 	public static void sp_bfs(Graph g, Vertex s) {
 		int edgeWeight = Integer.MIN_VALUE;
 		boolean initialized = false;
@@ -47,7 +62,7 @@ public class ShortestPath {
 		}
 	}
 
-	public static void sp_dag(Graph g, Vertex s) {
+	public static void sp_dag(Graph g, Vertex s, boolean zeroCycleSensitive) {
 		List<Vertex> topOrder = topSort(g);
 		initGraph(g);
 		s.distance = 0;
@@ -55,12 +70,12 @@ public class ShortestPath {
 		for (Vertex u : topOrder) {
 			for (Edge e : u.Adj) {
 				Vertex v = e.otherEnd(u);
-				relax(u, v, e);
+				relax(u, v, e, zeroCycleSensitive);
 			}
 		}
 	}
 
-	public static void sp_dijkstra(Graph g, Vertex s) {
+	public static void sp_dijkstra(Graph g, Vertex s, boolean zeroCycleSensitive) {
 		initGraph(g);
 		s.distance = 0;
 		Vertex comp = new Vertex(0);
@@ -75,7 +90,7 @@ public class ShortestPath {
 			for (Edge e : u.Adj) {
 				Vertex v = e.otherEnd(u);
 				if (!v.seen) {
-					if (relax(u, v, e)) {
+					if (relax(u, v, e, zeroCycleSensitive)) {
 						pq.decreaseKey(v);
 					}
 				}
@@ -83,7 +98,7 @@ public class ShortestPath {
 		}
 	}
 
-	public static boolean sp_bf(Graph g, Vertex s) {
+	public static boolean sp_bf(Graph g, Vertex s, boolean zeroCycleSensitive) {
 		initGraph(g);
 		s.distance = 0;
 		s.seen = true;
@@ -100,7 +115,7 @@ public class ShortestPath {
 
 			for (Edge e : u.Adj) {
 				Vertex v = e.otherEnd(u);
-				if (relax(u, v, e)) {
+				if (relax(u, v, e, zeroCycleSensitive)) {
 					if (!v.seen) {
 						queue.offer(v);
 						v.seen = true;
@@ -111,16 +126,49 @@ public class ShortestPath {
 		return true;
 	}
 
-	public static int sp_categorizer(Graph g) {
-		if (hasUniformEdgeWeight(g)) {
-			return DEF.UNIFORM_WEIGHT;
-		} else if (!hasCycle(g)) {
-			return DEF.DAG;
-		} else if (!hasNegEdgeWeight(g)) {
-			return DEF.NON_NEG_WEIGHT;
-		} else {
-			return DEF.OTHER;
+	public static List<Edge> findNonPosCycle(Graph g) {
+		Vertex start = null;
+		for (Vertex u : g) {
+			if (u.count >= g.numNodes) {
+				start = u;
+				break;
+			}
 		}
+
+		Set<Vertex> preDecesor = new HashSet<Vertex>();
+		preDecesor.add(start);
+		Vertex current = start.parent;
+		while (!preDecesor.contains(current)) {
+			preDecesor.add(current);
+			current = current.parent;
+		}
+		LinkedList<Edge> ret = new LinkedList<Edge>();
+		start = current;
+		do {
+			for (Edge e : current.revAdj) {
+				if (e.otherEnd(current) == current.parent) {
+					ret.addFirst(e);
+					current = current.parent;
+					break;
+				}
+			}
+		} while (current != start);
+		return ret;
+	}
+
+	public static Graph countSPPath(Graph g) {
+		Graph d = createSPDAG(g);
+		List<Vertex> topOrder = topSort(d);
+		Vertex source = findSource(d);
+		source.spCount = 1;
+
+		for (Vertex u : topOrder) {
+			for (Edge e : u.Adj) {
+				Vertex v = e.otherEnd(u);
+				v.spCount += u.spCount;
+			}
+		}
+		return d;
 	}
 
 	private static boolean hasUniformEdgeWeight(Graph g) {
@@ -141,7 +189,7 @@ public class ShortestPath {
 			}
 		}
 
-		if (uniformWeight <= 0) {
+		if (uniformWeight < 0) {
 			return false;
 		}
 
@@ -192,10 +240,10 @@ public class ShortestPath {
 		return ret;
 	}
 
-	private static boolean hasNegEdgeWeight(Graph g) {
+	private static boolean hasNegEdgeWeight(Graph g, boolean zeroCycleSensitive) {
 		for (Vertex v : g) {
 			for (Edge e : v.Adj) {
-				if (e.Weight < 0) {
+				if (e.Weight < 0 || (zeroCycleSensitive && e.Weight == 0)) {
 					return true;
 				}
 			}
@@ -215,15 +263,46 @@ public class ShortestPath {
 		}
 	}
 
-	private static boolean relax(Vertex u, Vertex v, Edge e) {
+	private static boolean relax(Vertex u, Vertex v, Edge e,
+			boolean zeroCycleSensitive) {
 		if (u.distance != Integer.MAX_VALUE) {
 			int temp = u.distance + e.Weight;
-			if (v.distance > temp) {
+			if (v.distance > temp || (zeroCycleSensitive && v.distance == temp)) {
 				v.distance = temp;
 				v.parent = u;
 				return true;
 			}
 		}
 		return false;
+	}
+
+	private static Graph createSPDAG(Graph g) {
+		Graph spDag = new Graph(g.numNodes);
+		for (Vertex u : g) {
+			Vertex spDagU = spDag.verts.get(u.name);
+			spDagU.distance = u.distance;
+
+			if (u.distance != Integer.MAX_VALUE) {
+				for (Edge e : u.Adj) {
+					Vertex v = e.otherEnd(u);
+					Vertex spDagV = spDag.verts.get(v.name);
+					if (v.distance == u.distance + e.Weight) {
+						spDag.addDirectedEdge(spDagU.name, spDagV.name,
+								e.Weight);
+					}
+				}
+			}
+		}
+		return spDag;
+	}
+
+	static Vertex findSource(Graph g) {
+		Vertex ret = null;
+		for (Vertex v : g) {
+			if (v.name == DEF.SOURCE) {
+				ret = v;
+			}
+		}
+		return ret;
 	}
 }

@@ -1,4 +1,3 @@
-
 public class DEF {
 	protected static final int UNIFORM_WEIGHT = 1;
 	protected static final int DAG = 2;
@@ -7,4 +6,7 @@ public class DEF {
 
 	protected static final int SIZE_CUT_OFF = 100;
 	protected static final int SOURCE = 1;
+
+	protected static final String ERROR_LEVEL1 = "Unable to solve problem. Graph has a negative cycle";
+	protected static final String ERROR_LEVEL2 = "Non-positive cycle in graph. DAC is not applicable";
 }

@@ -27,6 +27,7 @@ public class Vertex implements Comparator<Vertex>, Index {
 	public int finish; // end time in DFS visit
 	public int index;
 	public int count; // iteration counter used for Bellman-Ford Algorithm
+	public int spCount; // count of shotest path from source vertex
 
 	/**
 	 * Constructor for the vertex

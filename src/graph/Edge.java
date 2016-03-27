@@ -1,4 +1,5 @@
 package graph;
+
 /**
  * Class that represents an arc in a Graph
  * 
@@ -10,6 +11,8 @@ public class Edge {
 	public Vertex To; // tail vertex
 	public int Weight;// weight of the arc
 	public boolean seen; // indicator if been visited
+	public boolean isPartOfSP; // indicator if this edge is part of any shortest
+								// path
 
 	/**
 	 * Constructor for Edge

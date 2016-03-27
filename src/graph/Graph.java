@@ -22,7 +22,7 @@ public class Graph implements Iterable<Vertex> {
 	 * @param size
 	 *            : int - number of vertices
 	 */
-	Graph(int size) {
+	public Graph(int size) {
 		numNodes = size;
 		verts = new ArrayList<>(size + 1);
 		verts.add(0, null);
@@ -41,7 +41,7 @@ public class Graph implements Iterable<Vertex> {
 	 * @param weight
 	 *            : int - the weight of the edge
 	 */
-	void addEdge(int a, int b, int weight) {
+	public void addEdge(int a, int b, int weight) {
 		Vertex u = verts.get(a);
 		Vertex v = verts.get(b);
 		Edge e = new Edge(u, v, weight);
@@ -59,7 +59,7 @@ public class Graph implements Iterable<Vertex> {
 	 * @param weight
 	 *            : int - the weight of the arc
 	 */
-	void addDirectedEdge(int a, int b, int weight) {
+	public void addDirectedEdge(int a, int b, int weight) {
 		Vertex head = verts.get(a);
 		Vertex tail = verts.get(b);
 		Edge e = new Edge(head, tail, weight);
