@@ -1,15 +1,21 @@
+package graph;
+
 /**
  * Class to represent a vertex of a graph
  * 
  * add class variable cno, start, finish for connected component number
  * @author Peng Li
- * 
+ * @author Nan Zhang
  */
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-public class Vertex {
+import pq.Index;
+
+public class Vertex implements Comparator<Vertex>, Index {
+
 	public int name; // name of the vertex
 	public boolean seen; // flag to check if the vertex has already been visited
 	public Vertex parent; // parent of the vertex
@@ -19,11 +25,8 @@ public class Vertex {
 	public int cno; // connected component number
 	public int start; // start time in DFS visit
 	public int finish; // end time in DFS visit
-	/*
-	 * index of next to-be-added edge in the Adj arraylist during the finding of
-	 * Euler tour
-	 */
-	public int nextEdgeIndex = 0;
+	public int index;
+	public int count; // iteration counter used for Bellman-Ford Algorithm
 
 	/**
 	 * Constructor for the vertex
@@ -31,7 +34,7 @@ public class Vertex {
 	 * @param n
 	 *            : int - name of the vertex
 	 */
-	Vertex(int n) {
+	public Vertex(int n) {
 		name = n;
 		seen = false;
 		parent = null;
@@ -40,35 +43,38 @@ public class Vertex {
 	}
 
 	/**
-	 * find the next available edge to be added in the Euler tour
-	 * 
-	 * @return
-	 */
-	public Edge getNextEdge() {
-		Edge next = Adj.get(nextEdgeIndex);
-		next.seen = true;
-		nextEdgeIndex++;
-
-		return next;
-	}
-
-	/**
-	 * update nextEdgeIndex for already seen edges
-	 */
-	public void skipSeenEdge() {
-		while ((nextEdgeIndex < Adj.size()) && Adj.get(nextEdgeIndex).seen) {
-			nextEdgeIndex++;
-		}
-	}
-
-	public boolean isExhausted() {
-		return nextEdgeIndex == Adj.size();
-	}
-
-	/**
 	 * Method to represent a vertex by its name
 	 */
 	public String toString() {
 		return Integer.toString(name);
+	}
+
+	@Override
+	public void putIndex(int index) {
+		this.index = index;
+
+	}
+
+	@Override
+	public int getIndex() {
+		return this.index;
+	}
+
+	@Override
+	public int compare(Vertex o1, Vertex o2) {
+		if (o1.distance == Integer.MAX_VALUE
+				&& o2.distance == Integer.MAX_VALUE) {
+			return 0;
+		}
+
+		if (o1.distance == Integer.MAX_VALUE) {
+			return 1;
+		}
+
+		if (o2.distance == Integer.MAX_VALUE) {
+			return -1;
+		}
+
+		return o1.distance - o2.distance;
 	}
 }

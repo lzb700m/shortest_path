@@ -1,7 +1,10 @@
+package graph;
+
 /**
  * Class to represent a graph
  * 
- * @author Peng Li add printGraph, printGraphTranspose method
+ * @author Peng Li
+ * @author Nan Zhang
  */
 
 import java.util.ArrayList;
@@ -9,14 +12,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
-class Graph implements Iterable<Vertex> {
+public class Graph implements Iterable<Vertex> {
 	public List<Vertex> verts; // array of vertices
 	public int numNodes; // number of vertices in the graph
-	/*
-	 * number of vertices that have been exhausted during the finding of Euler
-	 * tour, "exhausted" means that all edges have been added to the tour
-	 */
-	public int exhasustedVertexCount = 0;
 
 	/**
 	 * Constructor for Graph
@@ -143,15 +141,11 @@ class Graph implements Iterable<Vertex> {
 		return g;
 	}
 
-	public boolean isExhausted() {
-		return exhasustedVertexCount == verts.size() - 1;
-	}
-
 	public void printGraph() {
 		for (Vertex u : this) {
 			System.out.println("Vertex: " + u);
 			for (Edge e : u.Adj) {
-				System.out.println(e);
+				System.out.println(e + " " + e.Weight);
 			}
 		}
 	}

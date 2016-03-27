@@ -1,3 +1,4 @@
+
 /**
  * Timer class for roughly calculating running time of programs
  * 
