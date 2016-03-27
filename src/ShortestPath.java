@@ -1,4 +1,3 @@
-
 import graph.Edge;
 import graph.Graph;
 import graph.Vertex;
@@ -160,7 +159,7 @@ public class ShortestPath {
 		return topSort(g) == null;
 	}
 
-	static List<Vertex> topSort(Graph g) {
+	private static List<Vertex> topSort(Graph g) {
 		int[] unvisitedEdge = new int[g.numNodes + 1];
 		Queue<Vertex> zeroDegreeVertices = new LinkedList<Vertex>();
 

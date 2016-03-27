@@ -21,6 +21,7 @@ public class Level1 {
 		Vertex source = findSource(input);
 		int graphType = ShortestPath.sp_categorizer(input);
 		String algoType = "";
+		boolean hasNegCycle = false;
 
 		switch (graphType) {
 		case DEF.UNIFORM_WEIGHT:
@@ -39,14 +40,20 @@ public class Level1 {
 			break;
 
 		case DEF.OTHER:
-			ShortestPath.sp_bf(input, source);
+			hasNegCycle = !ShortestPath.sp_bf(input, source);
 			algoType = "B-F";
 			break;
 
 		default:
 			break;
 		}
-		printOutput(input, source, algoType);
+
+		if (hasNegCycle) {
+			System.out
+					.println("Unable to solve problem. Graph has a negative cycle");
+		} else {
+			printOutput(input, source, algoType);
+		}
 	}
 
 	private static Vertex findSource(Graph g) {
