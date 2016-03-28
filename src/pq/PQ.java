@@ -1,8 +1,10 @@
 package pq;
 
 /**
+ * Priority Queue interface definition
  * 
- * @author Peng Li Priority Queue interface definition
+ * @author Peng Li
+ * @author Nan Zhang
  * 
  * @param <T>
  *            object to be stored in Priority Queue

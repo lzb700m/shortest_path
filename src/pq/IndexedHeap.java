@@ -4,6 +4,7 @@ package pq;
  * Subclass for BinaryHeap that keep tracking of index of element in the heap
  * 
  * @author Peng Li
+ * @author Nan Zhang
  */
 // Ver 1.0:  Wed, Feb 3.  Initial description.
 // Ver 1.1:  Thu, Feb 11.  Simplified Index interface

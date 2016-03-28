@@ -1,3 +1,9 @@
+/**
+ * Driver program for LP3 Level 1
+ * 
+ * @author Peng Li
+ * @author Nan Zhang
+ */
 import graph.Graph;
 import graph.Vertex;
 
@@ -14,12 +20,15 @@ public class Level1 {
 		} else {
 			in = new Scanner(System.in);
 		}
-
 		Graph input = Graph.readGraph(in, true);
 		in.close();
 
+		// find the source vertex for shortest path calculation according to the
+		// specification, source vertex is defined in DEF.java
 		Vertex source = ShortestPath.findSource(input);
-		//
+		// zeroCycleSensitive indicates if zero weight cycle will be treated as
+		// illegal input. For Level 1, zero weight cycle in input graph is
+		// allowed.
 		boolean zeroCycleSensitive = false;
 		String algoType = "";
 		boolean hasNegCycle = false;
@@ -62,6 +71,8 @@ public class Level1 {
 	private static void printOutput(Graph g, Vertex source, String algoType) {
 		long spSum = 0;
 
+		// calculate and output shorted path length sum of all vertices
+		// reachable from source
 		for (Vertex v : g) {
 			if (v.distance != Integer.MAX_VALUE) {
 				spSum += v.distance;
@@ -69,6 +80,7 @@ public class Level1 {
 		}
 		System.out.println(algoType + " " + spSum);
 
+		// output the shortest path for each vertex
 		if (g.numNodes <= DEF.SIZE_CUT_OFF) {
 			StringBuilder line = new StringBuilder();
 			for (Vertex v : g) {

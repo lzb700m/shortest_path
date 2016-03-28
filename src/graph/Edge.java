@@ -66,6 +66,6 @@ public class Edge {
 	 * arc and y is the tail of the arc
 	 */
 	public String toString() {
-		return "(" + From + "," + To + ")";
+		return "(" + From + "," + To + "), weight: " + this.Weight;
 	}
 }

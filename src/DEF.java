@@ -1,3 +1,9 @@
+/**
+ * Definition of global constant used throughout the project
+ * 
+ * @author Peng Li
+ * @author Nan Zhang
+ */
 public class DEF {
 	protected static final int UNIFORM_WEIGHT = 1;
 	protected static final int DAG = 2;

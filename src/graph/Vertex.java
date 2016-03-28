@@ -3,7 +3,6 @@ package graph;
 /**
  * Class to represent a vertex of a graph
  * 
- * add class variable cno, start, finish for connected component number
  * @author Peng Li
  * @author Nan Zhang
  */

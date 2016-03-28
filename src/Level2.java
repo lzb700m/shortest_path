@@ -1,3 +1,9 @@
+/**
+ * Driver program for LP3 Level 2
+ * 
+ * @author Peng Li
+ * @author Nan Zhang
+ */
 import graph.Edge;
 import graph.Graph;
 import graph.Vertex;
@@ -16,12 +22,15 @@ public class Level2 {
 		} else {
 			in = new Scanner(System.in);
 		}
-
 		Graph input = Graph.readGraph(in, true);
 		in.close();
 
+		// find the source vertex for shortest path calculation according to the
+		// specification, source vertex is defined in DEF.java
 		Vertex source = ShortestPath.findSource(input);
-		//
+		// zeroCycleSensitive indicates if zero weight cycle will be treated as
+		// illegal input. For Level 1, zero weight cycle in input graph is
+		// allowed.
 		boolean zeroCycleSensitive = true;
 		boolean hasNegCycle = false;
 
@@ -52,6 +61,7 @@ public class Level2 {
 		if (hasNegCycle) {
 			System.out.println(DEF.ERROR_LEVEL2);
 			List<Edge> nonPosCycle = ShortestPath.findNonPosCycle(input);
+			// output the non-positive cycle found
 			for (Edge e : nonPosCycle) {
 				System.out.println(e);
 			}
@@ -63,12 +73,14 @@ public class Level2 {
 
 	private static void printOutput(Graph g) {
 		int pathCountSum = 0;
-
+		// calculate and output shorted path count sum of all vertices
+		// reachable from source
 		for (Vertex v : g) {
 			pathCountSum += v.spCount;
 		}
 		System.out.println(pathCountSum);
 
+		// output the shortest path count for each vertex
 		if (g.numNodes <= DEF.SIZE_CUT_OFF) {
 			StringBuilder line = new StringBuilder();
 			for (Vertex v : g) {

@@ -1,9 +1,9 @@
 package pq;
 
 /**
- * @author Peng Li
- * 
  * Implementation of binary heap class (implements priority queue interface)
+ * @author Peng Li
+ * @author Nan Zhang
  */
 
 import java.io.File;
